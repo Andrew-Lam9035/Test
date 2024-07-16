@@ -1,1 +1,74 @@
-Hi
+section .text
+        global _start
+
+_start:
+        mov eax, 49        ;starting from 49     
+        jmp printout       ;Jump to printout to start
+        
+printout:
+        mov [num], eax
+        push eax        ;push eax value
+        
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, num  ;Because num is 49, it will print 1 which has 49 in ASCII form
+        mov edx, 1        
+        int 0x80
+        
+        mov eax, 4
+        mov ebx, 1
+        mov ecx, space  ;Adds the extra line after the number is finished
+        mov edx, 1
+        int 0x80
+        jmp increase
+        
+increase:
+
+        pop eax        ;restore eax
+        mov ebx, [ifTen]
+        inc eax          ;increase eax twice
+        inc eax         
+        cmp ebx, 2        ;If Ten is run once, then addTen will always run.
+        je addTen
+        cmp eax, 57        ;end number to stop print at :
+        jle printout           ;Keeps printing odd numbers until 9
+                                    ;After this runs ten, to increase ebx by 1.
+        jmp Ten             ;Jumps to Ten
+        
+        
+        
+Ten:
+        mov eax, 47       ;Change eax to 47 as increase will increase eax by 1 twice to 49 or 1
+                                    ;This restarts the cycle so it will print the same number but with a one infront
+        mov ebx, 2                            
+        mov [ifTen], ebx      ;Makes ifTen two so the program can use addTen
+        push eax
+        jmp  increase   ;Jump back to increase 
+        
+addTen:
+        cmp eax, 57        ;This is how the system exits if eax is greater than 57
+        jg exit
+
+        push eax
+        mov eax, 4          ;This adds 1 to the start of the number to make it into the teens
+        mov ebx, 1
+        mov ecx, addTens
+        mov edx, 1
+        int 0x80
+        pop eax
+        jmp printout
+   
+   
+exit:
+        mov eax, 1 ;Used to exit the system
+        int 0x80
+
+segment .bss
+        num resb 1
+
+        
+
+section .data
+        space dd 10        ;in ASCII, the new line is decimal 10
+        addTens dd 49   ;in ASCII, 1 is decimal 49
+        ifTen dd 1            ;This is to tell if the odd numbers are printed out so the program can add a 1 to the next odd numbers
