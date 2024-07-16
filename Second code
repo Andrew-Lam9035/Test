@@ -1,0 +1,42 @@
+section .text
+        global _start
+
+_start:
+        mov eax,[num1]
+        cmp eax,[num2]  ; compare the first operand with the second operand
+        jg found1               ;If greater move on to found1, keeping num1.
+        mov eax,[num2]  ;If not greater change to num2 and then move on.
+        jmp found1
+
+found1:
+        cmp eax,[num3] ;Same cycle all the way to found3
+        jg found2
+        mov eax,[num3]
+        jmp found2
+        
+found2:
+       cmp eax,[num4]
+        jg found3
+        mov eax,[num4]
+        jmp found3
+
+found3:
+        cmp eax,[num5]
+        jg exit
+        mov eax,[num5]
+        jmp exit
+        
+exit:
+        mov [largest],eax ;After looking through all of the numbers and put the number into largest
+        mov eax,1
+        int 0x80
+
+section .data
+        num1 dd 30
+        num2 dd 20
+        num3 dd 50
+        num4 dd 10
+        num5 dd 40
+
+segment .bss
+        largest resb 2
